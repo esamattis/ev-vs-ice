@@ -198,7 +198,7 @@
           </div>
           <p class="table-note"><span class="equivalent-value">≈</span> Samalla rahalla vastaava kulutus toisella energiamuodolla.</p>
           <div class="bar-wrap">
-            <div class="bar-labels"><span>Sähkön kustannus</span><span id="shareLabel">24 % polttoaineen kustannuksesta</span></div>
+            <div class="bar-labels" id="shareLabel">Sähkökustannus on 24% polttoaineen kustannuksista</div>
             <div class="bar"><div class="electric" id="costBar"></div></div>
             <p class="bar-note" id="electricityCostNote">Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.</p>
           </div>
@@ -310,7 +310,7 @@
       ['ev100', 'ice100'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
       ['evTrip', 'iceTrip', 'savingTrip'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
       ['evMonth', 'iceMonth', 'savingMonth'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
-      document.querySelector('#shareLabel').textContent = `${fi(result.share, 0)} % polttoaineen kustannuksesta`;
+      document.querySelector('#shareLabel').textContent = `Sähkökustannus on ${fi(result.share, 0)}% polttoaineen kustannuksista`;
       document.querySelector('#costBar').style.width = `${Math.min(100, Math.max(0, result.share))}%`;
       document.querySelector('#electricityCostNote').textContent = homeChargingToggle.checked
         ? 'Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.'
