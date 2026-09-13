@@ -142,8 +142,9 @@
             <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
           </div>
           <div class="field">
-            <label for="transfer">Sähkönsiirron hinta <output id="transferOut">9,0 snt/kWh</output></label>
-            <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirron hinta senttiä kilowattitunnilta"></div>
+            <label for="transfer">Sähkönsiirto ja verot <output id="transferOut">9,0 snt/kWh</output></label>
+            <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
+            <p class="input-help">Jos lataat julkisella tai muulla laturilla, jossa et itse maksa suoraan sähköstä, aseta hinnaksi nolla.</p>
             <p class="price-total">Sähkö yhteensä <strong id="totalElectricityPrice">20,0 snt/kWh</strong></p>
           </div>
           <div class="field">
@@ -164,8 +165,8 @@
             <div class="controls"><input id="fuelPrice" type="range" min="1" max="3.5" step="0.001" value="2.1"><input id="fuelPriceNum" type="number" min="0.01" step="0.001" value="2.1" aria-label="Polttoaineen hinta euroa litralta"></div>
           </div>
           <div class="field">
-            <label for="iceConsumption">Polttomoottoriauton kulutus <output id="iceConsumptionOut">6,0 l/100 km</output></label>
-            <div class="controls"><input id="iceConsumption" type="range" min="2" max="15" step="0.1" value="6"><input id="iceConsumptionNum" type="number" min="0.1" step="0.1" value="6" aria-label="Polttomoottoriauton kulutus litraa sadalla kilometrillä"></div>
+            <label for="iceConsumption">Polttomoottoriauton kulutus <output id="iceConsumptionOut">7,0 l/100 km</output></label>
+            <div class="controls"><input id="iceConsumption" type="range" min="2" max="15" step="0.1" value="7"><input id="iceConsumptionNum" type="number" min="0.1" step="0.1" value="7" aria-label="Polttomoottoriauton kulutus litraa sadalla kilometrillä"></div>
           </div>
         </fieldset>
         <button class="reset-button" id="resetDefaults" type="button">Palauta oletukset</button>
@@ -185,15 +186,15 @@
                 <tr><th scope="col">Vertailu</th><th scope="col">Sähkö</th><th scope="col">Polttoaine</th></tr>
               </thead>
               <tbody>
-                <tr><th scope="row">Polttoaineen kulutus<span class="row-unit">l / 100 km</span></th><td class="equivalent-value" id="evFuelEquivalent">≈ 1,66 l/100 km</td><td id="iceConsumptionResult">6,0 l/100 km</td></tr>
-                <tr><th scope="row">Sähkön kulutus verkosta<span class="row-unit">kWh / 100 km</span></th><td id="evConsumptionResult">17,4 kWh</td><td class="equivalent-value" id="iceElectricEquivalent">≈ 63,0 kWh</td></tr>
-                <tr><th scope="row">Kustannus / 100 km<span class="row-unit">euroa</span></th><td id="ev100">3,48 €</td><td id="ice100">12,60 €</td></tr>
+                <tr><th scope="row">Polttoaineen kulutus<span class="row-unit">l / 100 km</span></th><td class="equivalent-value" id="evFuelEquivalent">≈ 1,66 l/100 km</td><td id="iceConsumptionResult">7,0 l/100 km</td></tr>
+                <tr><th scope="row">Sähkön kulutus verkosta<span class="row-unit">kWh / 100 km</span></th><td id="evConsumptionResult">17,4 kWh</td><td class="equivalent-value" id="iceElectricEquivalent">≈ 73,5 kWh</td></tr>
+                <tr><th scope="row">Kustannus / 100 km<span class="row-unit">euroa</span></th><td id="ev100">3,48 €</td><td id="ice100">14,70 €</td></tr>
               </tbody>
             </table>
           </div>
           <p class="table-note"><span class="equivalent-value">≈</span> Samalla rahalla vastaava kulutus toisella energiamuodolla.</p>
           <div class="bar-wrap">
-            <div class="bar-labels"><span>Sähkön kustannus</span><span id="shareLabel">28 % polttoaineen kustannuksesta</span></div>
+            <div class="bar-labels"><span>Sähkön kustannus</span><span id="shareLabel">24 % polttoaineen kustannuksesta</span></div>
             <div class="bar"><div class="electric" id="costBar"></div></div>
             <p class="bar-note">Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.</p>
           </div>
@@ -212,19 +213,19 @@
                 <tr><th scope="col" id="totalScopeLabel">Matka</th><th scope="col">Sähkö</th><th scope="col">Polttoaine</th></tr>
               </thead>
               <tbody>
-                <tr><th scope="row"><span id="fuelTotalLabel">Polttoainetta</span><span class="row-unit">litraa</span></th><td class="equivalent-value" id="evTripFuelEquivalent">≈ 6,63 l</td><td id="iceTripFuel">24,00 l</td></tr>
-                <tr><th scope="row"><span id="electricityTotalLabel">Sähköä verkosta</span><span class="row-unit">kWh</span></th><td id="evTripElectricity">69,6 kWh</td><td class="equivalent-value" id="iceTripElectricEquivalent">≈ 252,0 kWh</td></tr>
-                <tr><th scope="row"><span id="costTotalLabel">Kustannus</span><span class="row-unit">euroa</span></th><td id="evTrip">13,91 €</td><td id="iceTrip">50,40 €</td></tr>
-                <tr data-annual hidden><th scope="row">Polttoainetta / kuukausi<span class="row-unit">litraa</span></th><td class="equivalent-value" id="evMonthFuelEquivalent">≈ 0,55 l</td><td id="iceMonthFuel">2,00 l</td></tr>
-                <tr data-annual hidden><th scope="row">Sähköä / kuukausi<span class="row-unit">kWh</span></th><td id="evMonthElectricity">5,8 kWh</td><td class="equivalent-value" id="iceMonthElectricEquivalent">≈ 21,0 kWh</td></tr>
-                <tr data-annual hidden><th scope="row">Kustannus / kuukausi<span class="row-unit">euroa</span></th><td id="evMonth">1,16 €</td><td id="iceMonth">4,20 €</td></tr>
+                <tr><th scope="row"><span id="fuelTotalLabel">Polttoainetta</span><span class="row-unit">litraa</span></th><td class="equivalent-value" id="evTripFuelEquivalent">≈ 6,63 l</td><td id="iceTripFuel">28,00 l</td></tr>
+                <tr><th scope="row"><span id="electricityTotalLabel">Sähköä verkosta</span><span class="row-unit">kWh</span></th><td id="evTripElectricity">69,6 kWh</td><td class="equivalent-value" id="iceTripElectricEquivalent">≈ 294,0 kWh</td></tr>
+                <tr><th scope="row"><span id="costTotalLabel">Kustannus</span><span class="row-unit">euroa</span></th><td id="evTrip">13,91 €</td><td id="iceTrip">58,80 €</td></tr>
+                <tr data-annual hidden><th scope="row">Polttoainetta / kuukausi<span class="row-unit">litraa</span></th><td class="equivalent-value" id="evMonthFuelEquivalent">≈ 0,55 l</td><td id="iceMonthFuel">2,33 l</td></tr>
+                <tr data-annual hidden><th scope="row">Sähköä / kuukausi<span class="row-unit">kWh</span></th><td id="evMonthElectricity">5,8 kWh</td><td class="equivalent-value" id="iceMonthElectricEquivalent">≈ 24,5 kWh</td></tr>
+                <tr data-annual hidden><th scope="row">Kustannus / kuukausi<span class="row-unit">euroa</span></th><td id="evMonth">1,16 €</td><td id="iceMonth">4,90 €</td></tr>
               </tbody>
             </table>
           </div>
           <p class="table-note"><span class="equivalent-value">≈</span> Samalla rahalla vastaava kulutus toisella energiamuodolla.</p>
           <div class="savings-summary" aria-label="Säästöt">
-            <div class="saving-card"><span id="savingTotalLabel">Säästö matkalla</span><strong id="savingTrip">36,49 €</strong></div>
-            <div class="saving-card" data-annual hidden><span>Säästö kuukaudessa</span><strong id="savingMonth">3,04 €</strong></div>
+            <div class="saving-card"><span id="savingTotalLabel">Säästö matkalla</span><strong id="savingTrip">44,89 €</strong></div>
+            <div class="saving-card" data-annual hidden><span>Säästö kuukaudessa</span><strong id="savingMonth">3,74 €</strong></div>
           </div>
           <div class="share-area">
             <button class="share-button" id="shareResults" type="button">Jaa tulokset</button>
@@ -243,7 +244,7 @@
       { id: 'fuelPrice', suffix: ' €/l', decimals: 3, defaultValue: 2.1 },
       { id: 'evConsumption', suffix: ' kWh/100 km', decimals: 1, defaultValue: 16 },
       { id: 'chargingLoss', suffix: ' %', decimals: 1, defaultValue: 8 },
-      { id: 'iceConsumption', suffix: ' l/100 km', decimals: 1, defaultValue: 6 },
+      { id: 'iceConsumption', suffix: ' l/100 km', decimals: 1, defaultValue: 7 },
       { id: 'distance', suffix: ' km', decimals: 0, defaultValue: 400 }
     ];
     const fi = (value, digits = 2) => new Intl.NumberFormat('fi-FI', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
