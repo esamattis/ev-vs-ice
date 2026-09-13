@@ -1,0 +1,426 @@
+
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d12">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e82127'/%3E%3Cpath d='M36 6 17 35h13l-3 23 20-32H34z' fill='white'/%3E%3C/svg%3E">
+  <title>EV vs. ICE – ajokustannuslaskuri</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a0e;
+      --panel: rgba(21, 24, 31, .82);
+      --panel-2: #1c2029;
+      --line: rgba(255,255,255,.10);
+      --text: #f4f5f7;
+      --muted: #a8afbb;
+      --red: #e82127;
+      --green: #54d18a;
+      --blue: #67a6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% -10%, rgba(232,33,39,.22), transparent 34rem),
+        radial-gradient(circle at 100% 40%, rgba(55,111,198,.12), transparent 34rem),
+        var(--bg);
+    }
+    main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 54px 0 70px; }
+    header { max-width: 720px; margin-bottom: 30px; }
+    .eyebrow { color: #ff777b; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; font-size: .74rem; }
+    h1 { margin: 10px 0 12px; font-size: clamp(2rem, 6vw, 4rem); line-height: .98; letter-spacing: -.055em; }
+    header p { margin: 0; color: var(--muted); font-size: 1.03rem; line-height: 1.55; }
+    .grid { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(340px, 1.18fr); align-items: start; gap: 20px; }
+    .results-stack { display: grid; min-width: 0; gap: 20px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 24px 80px rgba(0,0,0,.25); backdrop-filter: blur(12px); }
+    h2 { font-size: 1rem; margin: 0 0 22px; letter-spacing: -.01em; }
+    .field { margin-top: 19px; }
+    .field:first-of-type { margin-top: 0; }
+    .input-section { min-width: 0; margin: 25px 0 0; padding: 20px 16px 18px; border: 1px solid var(--line); border-radius: 16px; }
+    .input-section legend { padding: 0 7px; color: var(--text); font-size: .9rem; font-weight: 720; }
+    .section-code { display: inline-block; margin-right: 7px; color: #ff777b; font-size: .72rem; letter-spacing: .08em; }
+    .input-help { margin: 9px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.48; }
+    .reset-button {
+      width: 100%; margin-top: 20px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 11px;
+      background: rgba(255,255,255,.045); color: var(--text); font: inherit; font-size: .85rem; font-weight: 650; cursor: pointer;
+    }
+    .reset-button:hover { background: rgba(255,255,255,.08); }
+    .reset-button:focus-visible { outline: 2px solid #ff686d; outline-offset: 2px; }
+    .price-total { margin: 12px 0 0; color: var(--muted); font-size: .78rem; text-align: right; }
+    .price-total strong { color: var(--text); font-variant-numeric: tabular-nums; }
+    label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: .88rem; margin-bottom: 8px; }
+    label output { color: var(--text); font-weight: 720; font-variant-numeric: tabular-nums; }
+    .controls { display: grid; grid-template-columns: 1fr 98px; gap: 10px; align-items: center; }
+    input[type="range"] { width: 100%; accent-color: var(--red); cursor: pointer; }
+    input[type="number"] {
+      width: 100%; padding: 10px 9px; border-radius: 10px; border: 1px solid var(--line);
+      background: var(--panel-2); color: var(--text); font: inherit; font-variant-numeric: tabular-nums;
+    }
+    input:focus-visible { outline: 2px solid #ff686d; outline-offset: 2px; }
+    .result-hero { padding: 3px 0 23px; border-bottom: 1px solid var(--line); }
+    .result-hero .label { color: var(--muted); font-size: .86rem; }
+    .big { display: flex; align-items: baseline; gap: 8px; margin-top: 7px; }
+    .big strong { font-size: clamp(2.8rem, 7vw, 5rem); letter-spacing: -.065em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .big span { color: var(--muted); font-size: 1rem; }
+    .results-section-title { margin: 22px 0 10px; color: var(--text); font-size: .86rem; }
+    .trip-distance { margin: 0 0 12px; }
+    .annual-toggle { justify-content: flex-start; width: fit-content; margin: 0 0 18px; color: var(--text); cursor: pointer; }
+    .annual-toggle input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--red); cursor: pointer; }
+    .table-wrap { margin-top: 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; }
+    .results-section-title + .table-wrap, .trip-distance + .table-wrap { margin-top: 0; }
+    table { width: 100%; table-layout: fixed; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 13px 14px; text-align: right; border-bottom: 1px solid var(--line); }
+    th:first-child, td:first-child { text-align: left; }
+    th:first-child { width: 43%; }
+    thead th { color: var(--muted); background: rgba(255,255,255,.035); font-size: .78rem; font-weight: 650; }
+    tbody th { color: var(--muted); font-size: .82rem; font-weight: 560; }
+    tbody td { font-size: .94rem; font-weight: 700; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    .row-unit { display: block; margin-top: 2px; color: #747c89; font-size: .7rem; font-weight: 500; }
+    .equivalent-value { color: #ff9b9e; }
+    .table-note { margin: 10px 2px 0; color: var(--muted); font-size: .75rem; line-height: 1.45; }
+    .bar-wrap { margin-top: 22px; }
+    .bar-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: .77rem; margin-bottom: 9px; }
+    .bar { height: 12px; display: flex; overflow: hidden; background: #30343d; border-radius: 999px; }
+    .bar .electric { background: linear-gradient(90deg, #e82127, #ff6267); width: 28%; transition: width .25s ease; }
+    .bar-note { margin: 10px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.45; }
+    .savings-summary { margin-top: 22px; }
+    .savings-summary.annual-enabled { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .saving-card { padding: 16px; border: 1px solid rgba(84,209,138,.25); border-radius: 15px; background: rgba(84,209,138,.07); }
+    .saving-card span { display: block; color: #9ecdb1; font-size: .76rem; }
+    .saving-card strong { display: block; margin-top: 6px; color: var(--green); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+    .share-area { margin-top: 16px; text-align: center; }
+    .share-button {
+      width: 100%; padding: 12px 16px; border: 1px solid rgba(84,209,138,.4); border-radius: 12px;
+      background: rgba(84,209,138,.12); color: #c6f4d8; font: inherit; font-size: .9rem; font-weight: 720; cursor: pointer;
+    }
+    .share-button:hover { background: rgba(84,209,138,.18); }
+    .share-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+    .share-status { min-height: 1.2em; margin: 7px 0 0; color: var(--green); font-size: .76rem; }
+    .share-status.error { color: #ff777b; }
+    footer { margin-top: 17px; color: #747c89; font-size: .75rem; text-align: center; }
+    @media (min-width: 761px) {
+      .big strong { font-size: clamp(3rem, 5vw, 4rem); }
+    }
+    @media (max-width: 760px) {
+      main { padding-top: 34px; }
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+    }
+    @media (max-width: 420px) {
+      main { width: min(100% - 20px, 1060px); }
+      .controls { grid-template-columns: 1fr 90px; }
+      th, td { padding: 11px 8px; }
+      th:first-child { width: 46%; }
+      thead th, tbody th { font-size: .76rem; }
+      tbody td { font-size: .82rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">Ajokustannuslaskuri</div>
+      <h1>EV vs. ICE</h1>
+      <p>Katso, minkä kulutuksen polttomoottoriautoa sähköautosi energiakustannus vastaa.</p>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="settings-title">
+        <h2 id="settings-title">Laskennan arvot</h2>
+
+        <fieldset class="input-section">
+          <legend><span class="section-code">EV</span>Sähköauto</legend>
+          <div class="field">
+            <label for="electricity">Sähköenergian hinta <output id="electricityOut">11,0 snt/kWh</output></label>
+            <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
+          </div>
+          <div class="field">
+            <label for="transfer">Sähkönsiirron hinta <output id="transferOut">9,0 snt/kWh</output></label>
+            <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirron hinta senttiä kilowattitunnilta"></div>
+            <p class="price-total">Sähkö yhteensä <strong id="totalElectricityPrice">20,0 snt/kWh</strong></p>
+          </div>
+          <div class="field">
+            <label for="evConsumption">Sähköauton kulutus <output id="evConsumptionOut">16,0 kWh/100 km</output></label>
+            <div class="controls"><input id="evConsumption" type="range" min="8" max="40" step="0.1" value="16"><input id="evConsumptionNum" type="number" min="0.1" step="0.1" value="16" aria-label="Sähköauton kulutus kilowattituntia sadalla kilometrillä"></div>
+          </div>
+          <div class="field">
+            <label for="chargingLoss">Lataushäviö <output id="chargingLossOut">8,0 %</output></label>
+            <div class="controls"><input id="chargingLoss" type="range" min="0" max="30" step="0.5" value="8"><input id="chargingLossNum" type="number" min="0" max="95" step="0.5" value="8" aria-label="Lataushäviö prosentteina"></div>
+            <p class="input-help">Käytä esimerkiksi 8 %:n lataushäviötä, jos syötät auton ajotietokoneen näyttämän kulutuksen. Jos olet laskenut kulutuksen latausaseman tai sähkömittarin mittaamasta energiasta ja ajetuista kilometreistä, lataushäviöt sisältyvät jo tulokseen — aseta silloin 0 %.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="input-section">
+          <legend><span class="section-code">ICE</span>Polttomoottoriauto</legend>
+          <div class="field">
+            <label for="fuelPrice">Polttoaineen hinta <output id="fuelPriceOut">2,100 €/l</output></label>
+            <div class="controls"><input id="fuelPrice" type="range" min="1" max="3.5" step="0.001" value="2.1"><input id="fuelPriceNum" type="number" min="0.01" step="0.001" value="2.1" aria-label="Polttoaineen hinta euroa litralta"></div>
+          </div>
+          <div class="field">
+            <label for="iceConsumption">Polttomoottoriauton kulutus <output id="iceConsumptionOut">6,0 l/100 km</output></label>
+            <div class="controls"><input id="iceConsumption" type="range" min="2" max="15" step="0.1" value="6"><input id="iceConsumptionNum" type="number" min="0.1" step="0.1" value="6" aria-label="Polttomoottoriauton kulutus litraa sadalla kilometrillä"></div>
+          </div>
+        </fieldset>
+        <button class="reset-button" id="resetDefaults" type="button">Palauta oletukset</button>
+      </section>
+
+      <div class="results-stack">
+        <section class="card" aria-live="polite" aria-labelledby="results-title">
+          <h2 id="results-title">Tulos</h2>
+          <div class="result-hero">
+            <div class="label">Sähköauto vastaa polttomoottoriautoa, joka kuluttaa</div>
+            <div class="big"><strong id="equivalent">1,66</strong><span>l / 100 km</span></div>
+          </div>
+          <h3 class="results-section-title">Kulutusvertailu</h3>
+          <div class="table-wrap">
+            <table aria-label="Kulutusvertailu">
+              <thead>
+                <tr><th scope="col">Vertailu</th><th scope="col">Sähkö</th><th scope="col">Polttoaine</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Polttoaineen kulutus<span class="row-unit">l / 100 km</span></th><td class="equivalent-value" id="evFuelEquivalent">≈ 1,66 l/100 km</td><td id="iceConsumptionResult">6,0 l/100 km</td></tr>
+                <tr><th scope="row">Sähkön kulutus verkosta<span class="row-unit">kWh / 100 km</span></th><td id="evConsumptionResult">17,4 kWh</td><td class="equivalent-value" id="iceElectricEquivalent">≈ 63,0 kWh</td></tr>
+                <tr><th scope="row">Kustannus / 100 km<span class="row-unit">euroa</span></th><td id="ev100">3,48 €</td><td id="ice100">12,60 €</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note"><span class="equivalent-value">≈</span> Samalla rahalla vastaava kulutus toisella energiamuodolla.</p>
+          <div class="bar-wrap">
+            <div class="bar-labels"><span>Sähkön kustannus</span><span id="shareLabel">28 % polttoaineen kustannuksesta</span></div>
+            <div class="bar"><div class="electric" id="costBar"></div></div>
+            <p class="bar-note">Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.</p>
+          </div>
+        </section>
+
+        <section class="card" aria-live="polite" aria-labelledby="trip-title">
+          <h2 id="trip-title">Matkan kustannukset ja kulutukset</h2>
+          <div class="field trip-distance">
+            <label for="distance"><span id="distanceLabel">Matkan pituus</span> <output id="distanceOut">400 km</output></label>
+            <div class="controls"><input id="distance" type="range" min="0" max="2000" step="1" value="400"><input id="distanceNum" type="number" min="0" max="2000" step="1" value="400" aria-label="Matkan pituus kilometreinä"></div>
+          </div>
+          <label class="annual-toggle"><input id="annualToggle" type="checkbox"><span>Vuosittainen ajosuorite</span></label>
+          <div class="table-wrap">
+            <table aria-label="Matkan kustannukset ja kulutukset">
+              <thead>
+                <tr><th scope="col" id="totalScopeLabel">Matka</th><th scope="col">Sähkö</th><th scope="col">Polttoaine</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row"><span id="fuelTotalLabel">Polttoainetta</span><span class="row-unit">litraa</span></th><td class="equivalent-value" id="evTripFuelEquivalent">≈ 6,63 l</td><td id="iceTripFuel">24,00 l</td></tr>
+                <tr><th scope="row"><span id="electricityTotalLabel">Sähköä verkosta</span><span class="row-unit">kWh</span></th><td id="evTripElectricity">69,6 kWh</td><td class="equivalent-value" id="iceTripElectricEquivalent">≈ 252,0 kWh</td></tr>
+                <tr><th scope="row"><span id="costTotalLabel">Kustannus</span><span class="row-unit">euroa</span></th><td id="evTrip">13,91 €</td><td id="iceTrip">50,40 €</td></tr>
+                <tr data-annual hidden><th scope="row">Polttoainetta / kuukausi<span class="row-unit">litraa</span></th><td class="equivalent-value" id="evMonthFuelEquivalent">≈ 0,55 l</td><td id="iceMonthFuel">2,00 l</td></tr>
+                <tr data-annual hidden><th scope="row">Sähköä / kuukausi<span class="row-unit">kWh</span></th><td id="evMonthElectricity">5,8 kWh</td><td class="equivalent-value" id="iceMonthElectricEquivalent">≈ 21,0 kWh</td></tr>
+                <tr data-annual hidden><th scope="row">Kustannus / kuukausi<span class="row-unit">euroa</span></th><td id="evMonth">1,16 €</td><td id="iceMonth">4,20 €</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note"><span class="equivalent-value">≈</span> Samalla rahalla vastaava kulutus toisella energiamuodolla.</p>
+          <div class="savings-summary" aria-label="Säästöt">
+            <div class="saving-card"><span id="savingTotalLabel">Säästö matkalla</span><strong id="savingTrip">36,49 €</strong></div>
+            <div class="saving-card" data-annual hidden><span>Säästö kuukaudessa</span><strong id="savingMonth">3,04 €</strong></div>
+          </div>
+          <div class="share-area">
+            <button class="share-button" id="shareResults" type="button">Jaa tulokset</button>
+            <p class="share-status" id="shareStatus" role="status" aria-live="polite"></p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <footer>Verkosta otettu energia = auton kulutus ÷ (1 − lataushäviö)</footer>
+  </main>
+
+  <script>
+    const fields = [
+      { id: 'electricity', suffix: ' snt/kWh', decimals: 1, defaultValue: 11 },
+      { id: 'transfer', suffix: ' snt/kWh', decimals: 1, defaultValue: 9 },
+      { id: 'fuelPrice', suffix: ' €/l', decimals: 3, defaultValue: 2.1 },
+      { id: 'evConsumption', suffix: ' kWh/100 km', decimals: 1, defaultValue: 16 },
+      { id: 'chargingLoss', suffix: ' %', decimals: 1, defaultValue: 8 },
+      { id: 'iceConsumption', suffix: ' l/100 km', decimals: 1, defaultValue: 6 },
+      { id: 'distance', suffix: ' km', decimals: 0, defaultValue: 400 }
+    ];
+    const fi = (value, digits = 2) => new Intl.NumberFormat('fi-FI', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const euros = (value, digits = 0) => `${fi(value, digits)} €`;
+
+    function calculate(electricity, transfer, fuelPrice, evConsumption, chargingLoss, iceConsumption, distance) {
+      const totalElectricity = electricity + transfer;
+      const safeLoss = Math.min(95, Math.max(0, chargingLoss));
+      const gridConsumption = evConsumption / (1 - safeLoss / 100);
+      const ev100 = totalElectricity / 100 * gridConsumption;
+      const ice100 = fuelPrice * iceConsumption;
+      const equivalent = fuelPrice > 0 ? ev100 / fuelPrice : 0;
+      const electricEquivalent = totalElectricity > 0 ? ice100 / (totalElectricity / 100) : 0;
+      const evTrip = ev100 * distance / 100;
+      const iceTrip = ice100 * distance / 100;
+      const monthlyDistance = distance / 12;
+      const evMonth = ev100 * monthlyDistance / 100;
+      const iceMonth = ice100 * monthlyDistance / 100;
+      const share = ice100 > 0 ? ev100 / ice100 * 100 : 0;
+      return {
+        totalElectricity, gridConsumption, equivalent,
+        electricEquivalent,
+        evTripFuelEquivalent: equivalent * distance / 100,
+        iceTripFuel: iceConsumption * distance / 100,
+        evTripElectricity: gridConsumption * distance / 100,
+        iceTripElectricEquivalent: electricEquivalent * distance / 100,
+        evMonthFuelEquivalent: equivalent * monthlyDistance / 100,
+        iceMonthFuel: iceConsumption * monthlyDistance / 100,
+        evMonthElectricity: gridConsumption * monthlyDistance / 100,
+        iceMonthElectricEquivalent: electricEquivalent * monthlyDistance / 100,
+        evMonth, iceMonth,
+        ev100, ice100, evTrip, iceTrip, share,
+        savingTrip: iceTrip - evTrip,
+        savingMonth: iceMonth - evMonth
+      };
+    }
+
+    function update() {
+      const values = ['electricity', 'transfer', 'fuelPrice', 'evConsumption', 'chargingLoss', 'iceConsumption', 'distance']
+        .map(id => Math.max(0, +document.querySelector(`#${id}Num`).value || 0));
+      const [, , , , , iceConsumption] = values;
+      const result = calculate(...values);
+
+      document.querySelector('#totalElectricityPrice').textContent = `${fi(result.totalElectricity, 1)} snt/kWh`;
+      document.querySelector('#equivalent').textContent = fi(result.equivalent, 2);
+      document.querySelector('#evFuelEquivalent').textContent = `≈ ${fi(result.equivalent, 2)} l/100 km`;
+      document.querySelector('#iceElectricEquivalent').textContent = `≈ ${fi(result.electricEquivalent, 1)} kWh`;
+      document.querySelector('#evConsumptionResult').textContent = `${fi(result.gridConsumption, 1)} kWh`;
+      document.querySelector('#iceConsumptionResult').textContent = `${fi(iceConsumption, 1)} l/100 km`;
+      document.querySelector('#evTripFuelEquivalent').textContent = `≈ ${fi(result.evTripFuelEquivalent, 2)} l`;
+      document.querySelector('#iceTripFuel').textContent = `${fi(result.iceTripFuel, 2)} l`;
+      document.querySelector('#evTripElectricity').textContent = `${fi(result.evTripElectricity, 1)} kWh`;
+      document.querySelector('#iceTripElectricEquivalent').textContent = `≈ ${fi(result.iceTripElectricEquivalent, 1)} kWh`;
+      document.querySelector('#evMonthFuelEquivalent').textContent = `≈ ${fi(result.evMonthFuelEquivalent, 2)} l`;
+      document.querySelector('#iceMonthFuel').textContent = `${fi(result.iceMonthFuel, 2)} l`;
+      document.querySelector('#evMonthElectricity').textContent = `${fi(result.evMonthElectricity, 1)} kWh`;
+      document.querySelector('#iceMonthElectricEquivalent').textContent = `≈ ${fi(result.iceMonthElectricEquivalent, 1)} kWh`;
+      ['ev100', 'ice100'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
+      ['evTrip', 'iceTrip', 'savingTrip'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
+      ['evMonth', 'iceMonth', 'savingMonth'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
+      document.querySelector('#shareLabel').textContent = `${fi(result.share, 0)} % polttoaineen kustannuksesta`;
+      document.querySelector('#costBar').style.width = `${Math.min(100, Math.max(0, result.share))}%`;
+    }
+
+    function setFieldValue({ id, suffix, decimals }, value) {
+      document.querySelector(`#${id}`).value = value;
+      document.querySelector(`#${id}Num`).value = value;
+      document.querySelector(`#${id}Out`).textContent = `${fi(value, decimals)}${suffix}`;
+    }
+
+    const annualToggle = document.querySelector('#annualToggle');
+
+    function setAnnualVisibility(enabled) {
+      document.querySelectorAll('[data-annual]').forEach(element => { element.hidden = !enabled; });
+      document.querySelector('.savings-summary').classList.toggle('annual-enabled', enabled);
+      document.querySelector('#distanceLabel').textContent = enabled ? 'Ajomäärä vuodessa' : 'Matkan pituus';
+      const distanceRange = document.querySelector('#distance');
+      const distanceNumber = document.querySelector('#distanceNum');
+      const maxDistance = enabled ? 60000 : 2000;
+      distanceRange.max = maxDistance;
+      distanceRange.step = enabled ? 500 : 1;
+      distanceNumber.max = maxDistance;
+      distanceNumber.step = enabled ? 500 : 1;
+      distanceNumber.setAttribute('aria-label', enabled ? 'Ajokilometrit vuodessa' : 'Matkan pituus kilometreinä');
+      if (+distanceNumber.value > maxDistance) {
+        setFieldValue(fields.find(field => field.id === 'distance'), maxDistance);
+      } else {
+        distanceRange.value = distanceNumber.value;
+      }
+      document.querySelector('#totalScopeLabel').textContent = enabled ? 'Vuosi' : 'Matka';
+      document.querySelector('#fuelTotalLabel').textContent = enabled ? 'Polttoainetta / vuosi' : 'Polttoainetta';
+      document.querySelector('#electricityTotalLabel').textContent = enabled ? 'Sähköä / vuosi' : 'Sähköä verkosta';
+      document.querySelector('#costTotalLabel').textContent = enabled ? 'Kustannus / vuosi' : 'Kustannus';
+      document.querySelector('#savingTotalLabel').textContent = enabled ? 'Säästö vuodessa' : 'Säästö matkalla';
+    }
+
+    let queryTimer;
+
+    function writeValuesToQuery() {
+      const params = new URLSearchParams(location.search);
+      fields.forEach(({ id, defaultValue }) => {
+        const value = +document.querySelector(`#${id}Num`).value || 0;
+        if (value === defaultValue) params.delete(id);
+        else params.set(id, String(value));
+      });
+      if (annualToggle.checked) params.set('annual', '1');
+      else params.delete('annual');
+      const query = params.toString();
+      const nextUrl = `${location.pathname}${query ? `?${query}` : ''}${location.hash}`;
+      history.replaceState(null, '', nextUrl);
+    }
+
+    function scheduleQueryUpdate() {
+      clearTimeout(queryTimer);
+      queryTimer = setTimeout(writeValuesToQuery, 1000);
+    }
+
+    function loadValuesFromQuery() {
+      const params = new URLSearchParams(location.search);
+      fields.forEach(field => {
+        const stored = Number(params.get(field.id));
+        const hasValidValue = params.has(field.id) && Number.isFinite(stored) && stored >= 0;
+        setFieldValue(field, hasValidValue ? stored : field.defaultValue);
+      });
+      annualToggle.checked = params.get('annual') === '1';
+      setAnnualVisibility(annualToggle.checked);
+    }
+
+    fields.forEach(field => {
+      const { id, suffix, decimals } = field;
+      const range = document.querySelector(`#${id}`);
+      const number = document.querySelector(`#${id}Num`);
+      const output = document.querySelector(`#${id}Out`);
+      const sync = (source, target) => {
+        target.value = source.value;
+        output.textContent = `${fi(+source.value || 0, decimals)}${suffix}`;
+        update();
+        scheduleQueryUpdate();
+      };
+      range.addEventListener('input', () => sync(range, number));
+      number.addEventListener('input', () => sync(number, range));
+    });
+
+    annualToggle.addEventListener('change', () => {
+      setAnnualVisibility(annualToggle.checked);
+      update();
+      writeValuesToQuery();
+    });
+
+    document.querySelector('#resetDefaults').addEventListener('click', () => {
+      clearTimeout(queryTimer);
+      fields.forEach(field => setFieldValue(field, field.defaultValue));
+      annualToggle.checked = false;
+      setAnnualVisibility(false);
+      update();
+      writeValuesToQuery();
+    });
+
+    let shareStatusTimer;
+    document.querySelector('#shareResults').addEventListener('click', async () => {
+      clearTimeout(queryTimer);
+      writeValuesToQuery();
+      const status = document.querySelector('#shareStatus');
+      clearTimeout(shareStatusTimer);
+      try {
+        await navigator.clipboard.writeText(location.href);
+        status.textContent = 'Linkki kopioitu leikepöydälle.';
+        status.classList.remove('error');
+      } catch (_) {
+        status.textContent = 'Kopiointi epäonnistui. Kopioi osoite selaimen osoiteriviltä.';
+        status.classList.add('error');
+      }
+      shareStatusTimer = setTimeout(() => { status.textContent = ''; }, 3000);
+    });
+
+    loadValuesFromQuery();
+    update();
+  </script>
+</body>
+</html>
