@@ -191,7 +191,7 @@
                 <tr><th scope="col">Vertailu</th><th scope="col">Sähkö</th><th scope="col">Polttoaine</th></tr>
               </thead>
               <tbody>
-                <tr><th scope="row">Polttoaineen kulutus<span class="row-unit">l / 100 km</span></th><td class="equivalent-value" id="evFuelEquivalent">≈ 1,66 l/100 km</td><td id="iceConsumptionResult">7,0 l/100 km</td></tr>
+                <tr><th scope="row">Polttoaineen kulutus<span class="row-unit">l / 100 km</span></th><td class="equivalent-value" id="evFuelEquivalent">≈ 1,66 l</td><td id="iceConsumptionResult">7,0 l</td></tr>
                 <tr><th scope="row">Sähkön kulutus verkosta<span class="row-unit">kWh / 100 km</span></th><td id="evConsumptionResult">17,4 kWh</td><td class="equivalent-value" id="iceElectricEquivalent">≈ 73,5 kWh</td></tr>
                 <tr><th scope="row">Kustannus / 100 km<span class="row-unit">euroa</span></th><td id="ev100">3,48 €</td><td id="ice100">14,70 €</td></tr>
               </tbody>
@@ -296,10 +296,10 @@
 
       document.querySelector('#totalElectricityPrice').textContent = `${fi(result.totalElectricity, 1)} snt/kWh`;
       document.querySelector('#equivalent').textContent = fi(result.equivalent, 2);
-      document.querySelector('#evFuelEquivalent').textContent = `≈ ${fi(result.equivalent, 2)} l/100 km`;
+      document.querySelector('#evFuelEquivalent').textContent = `≈ ${fi(result.equivalent, 2)} l`;
       document.querySelector('#iceElectricEquivalent').textContent = `≈ ${fi(result.electricEquivalent, 1)} kWh`;
       document.querySelector('#evConsumptionResult').textContent = `${fi(result.gridConsumption, 1)} kWh`;
-      document.querySelector('#iceConsumptionResult').textContent = `${fi(iceConsumption, 1)} l/100 km`;
+      document.querySelector('#iceConsumptionResult').textContent = `${fi(iceConsumption, 1)} l`;
       document.querySelector('#evTripFuelEquivalent').textContent = `≈ ${fi(result.evTripFuelEquivalent, 2)} l`;
       document.querySelector('#iceTripFuel').textContent = `${fi(result.iceTripFuel, 2)} l`;
       document.querySelector('#evTripElectricity').textContent = `${fi(result.evTripElectricity, 1)} kWh`;
