@@ -69,9 +69,10 @@
     .big strong { font-size: clamp(2.8rem, 7vw, 5rem); letter-spacing: -.065em; line-height: 1; font-variant-numeric: tabular-nums; }
     .big span { color: var(--muted); font-size: 1rem; }
     .results-section-title { margin: 22px 0 10px; color: var(--text); font-size: .86rem; }
-    .trip-distance { margin: 0 0 12px; }
+    .trip-distance { margin: 0 0 4px; }
+    .home-charging-field { margin-top: 4px; }
     .annual-toggle, .home-charging-toggle { justify-content: flex-start; width: fit-content; color: var(--text); cursor: pointer; }
-    .annual-toggle { margin: 0 0 18px; }
+    .annual-toggle { margin: 0 0 24px; }
     .home-charging-toggle { margin-bottom: 12px; }
     .annual-toggle input, .home-charging-toggle input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--red); cursor: pointer; }
     .table-wrap { margin-top: 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; }
@@ -143,7 +144,7 @@
             <label for="electricity"><span>Sähköenergian hinta <span class="label-unit">(snt/kWh)</span></span></label>
             <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
           </div>
-          <div class="field">
+          <div class="field home-charging-field">
             <label class="home-charging-toggle"><input id="homeCharging" type="checkbox" aria-controls="transferSettings" checked><span>Kotilataus</span></label>
             <div id="transferSettings">
               <label for="transfer"><span>Sähkönsiirto ja verot <span class="label-unit">(snt/kWh)</span></span></label>
