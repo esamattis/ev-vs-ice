@@ -70,8 +70,10 @@
     .big span { color: var(--muted); font-size: 1rem; }
     .results-section-title { margin: 22px 0 10px; color: var(--text); font-size: .86rem; }
     .trip-distance { margin: 0 0 12px; }
-    .annual-toggle { justify-content: flex-start; width: fit-content; margin: 0 0 18px; color: var(--text); cursor: pointer; }
-    .annual-toggle input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--red); cursor: pointer; }
+    .annual-toggle, .home-charging-toggle { justify-content: flex-start; width: fit-content; color: var(--text); cursor: pointer; }
+    .annual-toggle { margin: 0 0 18px; }
+    .home-charging-toggle { margin-bottom: 12px; }
+    .annual-toggle input, .home-charging-toggle input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--red); cursor: pointer; }
     .table-wrap { margin-top: 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; }
     .results-section-title + .table-wrap, .trip-distance + .table-wrap { margin-top: 0; }
     table { width: 100%; table-layout: fixed; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -142,9 +144,11 @@
             <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
           </div>
           <div class="field">
-            <label for="transfer">Sähkönsiirto ja verot <output id="transferOut">9,0 snt/kWh</output></label>
-            <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
-            <p class="input-help">Jos lataat julkisella tai muulla laturilla, jossa et itse maksa suoraan sähköstä, aseta hinnaksi nolla.</p>
+            <label class="home-charging-toggle"><input id="homeCharging" type="checkbox" aria-controls="transferSettings" checked><span>Kotilataus</span></label>
+            <div id="transferSettings">
+              <label for="transfer">Sähkönsiirto ja verot <output id="transferOut">9,0 snt/kWh</output></label>
+              <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
+            </div>
             <p class="price-total">Sähkö yhteensä <strong id="totalElectricityPrice">20,0 snt/kWh</strong></p>
           </div>
           <div class="field">
@@ -196,7 +200,7 @@
           <div class="bar-wrap">
             <div class="bar-labels"><span>Sähkön kustannus</span><span id="shareLabel">24 % polttoaineen kustannuksesta</span></div>
             <div class="bar"><div class="electric" id="costBar"></div></div>
-            <p class="bar-note">Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.</p>
+            <p class="bar-note" id="electricityCostNote">Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.</p>
           </div>
         </section>
 
@@ -285,6 +289,7 @@
     function update() {
       const values = ['electricity', 'transfer', 'fuelPrice', 'evConsumption', 'chargingLoss', 'iceConsumption', 'distance']
         .map(id => Math.max(0, +document.querySelector(`#${id}Num`).value || 0));
+      if (!homeChargingToggle.checked) values[1] = 0;
       const [, , , , , iceConsumption] = values;
       const result = calculate(...values);
 
@@ -307,6 +312,9 @@
       ['evMonth', 'iceMonth', 'savingMonth'].forEach(id => document.querySelector(`#${id}`).textContent = euros(result[id], 2));
       document.querySelector('#shareLabel').textContent = `${fi(result.share, 0)} % polttoaineen kustannuksesta`;
       document.querySelector('#costBar').style.width = `${Math.min(100, Math.max(0, result.share))}%`;
+      document.querySelector('#electricityCostNote').textContent = homeChargingToggle.checked
+        ? 'Sähkön kustannus sisältää sähköenergian, sähkönsiirron ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.'
+        : 'Sähkön kustannus sisältää sähköenergian ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.';
     }
 
     function setFieldValue({ id, suffix, decimals }, value) {
@@ -316,6 +324,11 @@
     }
 
     const annualToggle = document.querySelector('#annualToggle');
+    const homeChargingToggle = document.querySelector('#homeCharging');
+
+    function setHomeChargingVisibility(enabled) {
+      document.querySelector('#transferSettings').hidden = !enabled;
+    }
 
     function setAnnualVisibility(enabled) {
       document.querySelectorAll('[data-annual]').forEach(element => { element.hidden = !enabled; });
@@ -352,6 +365,8 @@
       });
       if (annualToggle.checked) params.set('annual', '1');
       else params.delete('annual');
+      if (homeChargingToggle.checked) params.delete('homeCharging');
+      else params.set('homeCharging', '0');
       const query = params.toString();
       const nextUrl = `${location.pathname}${query ? `?${query}` : ''}${location.hash}`;
       history.replaceState(null, '', nextUrl);
@@ -370,7 +385,9 @@
         setFieldValue(field, hasValidValue ? stored : field.defaultValue);
       });
       annualToggle.checked = params.get('annual') === '1';
+      homeChargingToggle.checked = params.get('homeCharging') !== '0';
       setAnnualVisibility(annualToggle.checked);
+      setHomeChargingVisibility(homeChargingToggle.checked);
     }
 
     fields.forEach(field => {
@@ -394,11 +411,19 @@
       writeValuesToQuery();
     });
 
+    homeChargingToggle.addEventListener('change', () => {
+      setHomeChargingVisibility(homeChargingToggle.checked);
+      update();
+      writeValuesToQuery();
+    });
+
     document.querySelector('#resetDefaults').addEventListener('click', () => {
       clearTimeout(queryTimer);
       fields.forEach(field => setFieldValue(field, field.defaultValue));
       annualToggle.checked = false;
+      homeChargingToggle.checked = true;
       setAnnualVisibility(false);
+      setHomeChargingVisibility(true);
       update();
       writeValuesToQuery();
     });
