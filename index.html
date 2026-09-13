@@ -55,7 +55,7 @@
     .price-total { margin: 12px 0 0; color: var(--muted); font-size: .78rem; text-align: right; }
     .price-total strong { color: var(--text); font-variant-numeric: tabular-nums; }
     label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: .88rem; margin-bottom: 8px; }
-    label output { color: var(--text); font-weight: 720; font-variant-numeric: tabular-nums; }
+    .label-unit { color: #747c89; font-size: .8em; }
     .controls { display: grid; grid-template-columns: 1fr 98px; gap: 10px; align-items: center; }
     input[type="range"] { width: 100%; accent-color: var(--red); cursor: pointer; }
     input[type="number"] {
@@ -140,23 +140,23 @@
         <fieldset class="input-section">
           <legend><span class="section-code">EV</span>Sähköauto</legend>
           <div class="field">
-            <label for="electricity">Sähköenergian hinta <output id="electricityOut">11,0 snt/kWh</output></label>
+            <label for="electricity"><span>Sähköenergian hinta <span class="label-unit">(snt/kWh)</span></span></label>
             <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
           </div>
           <div class="field">
             <label class="home-charging-toggle"><input id="homeCharging" type="checkbox" aria-controls="transferSettings" checked><span>Kotilataus</span></label>
             <div id="transferSettings">
-              <label for="transfer">Sähkönsiirto ja verot <output id="transferOut">9,0 snt/kWh</output></label>
+              <label for="transfer"><span>Sähkönsiirto ja verot <span class="label-unit">(snt/kWh)</span></span></label>
               <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
             </div>
             <p class="price-total">Sähkö yhteensä <strong id="totalElectricityPrice">20,0 snt/kWh</strong></p>
           </div>
           <div class="field">
-            <label for="evConsumption">Sähköauton kulutus <output id="evConsumptionOut">16,0 kWh/100 km</output></label>
+            <label for="evConsumption"><span>Sähköauton kulutus <span class="label-unit">(kWh/100 km)</span></span></label>
             <div class="controls"><input id="evConsumption" type="range" min="8" max="40" step="0.1" value="16"><input id="evConsumptionNum" type="number" min="0.1" step="0.1" value="16" aria-label="Sähköauton kulutus kilowattituntia sadalla kilometrillä"></div>
           </div>
           <div class="field">
-            <label for="chargingLoss">Lataushäviö <output id="chargingLossOut">8,0 %</output></label>
+            <label for="chargingLoss"><span>Lataushäviö <span class="label-unit">(%)</span></span></label>
             <div class="controls"><input id="chargingLoss" type="range" min="0" max="30" step="0.5" value="8"><input id="chargingLossNum" type="number" min="0" max="95" step="0.5" value="8" aria-label="Lataushäviö prosentteina"></div>
             <p class="input-help">Käytä esimerkiksi 8 %:n lataushäviötä, jos syötät auton ajotietokoneen näyttämän kulutuksen. Jos olet laskenut kulutuksen latausaseman tai sähkömittarin mittaamasta energiasta ja ajetuista kilometreistä, lataushäviöt sisältyvät jo tulokseen — aseta silloin 0 %.</p>
           </div>
@@ -165,11 +165,11 @@
         <fieldset class="input-section">
           <legend><span class="section-code">ICE</span>Polttomoottoriauto</legend>
           <div class="field">
-            <label for="fuelPrice">Polttoaineen hinta <output id="fuelPriceOut">2,100 €/l</output></label>
+            <label for="fuelPrice"><span>Polttoaineen hinta <span class="label-unit">(€/l)</span></span></label>
             <div class="controls"><input id="fuelPrice" type="range" min="1" max="3.5" step="0.001" value="2.1"><input id="fuelPriceNum" type="number" min="0.01" step="0.001" value="2.1" aria-label="Polttoaineen hinta euroa litralta"></div>
           </div>
           <div class="field">
-            <label for="iceConsumption">Polttomoottoriauton kulutus <output id="iceConsumptionOut">7,0 l/100 km</output></label>
+            <label for="iceConsumption"><span>Polttomoottoriauton kulutus <span class="label-unit">(l/100 km)</span></span></label>
             <div class="controls"><input id="iceConsumption" type="range" min="2" max="15" step="0.1" value="7"><input id="iceConsumptionNum" type="number" min="0.1" step="0.1" value="7" aria-label="Polttomoottoriauton kulutus litraa sadalla kilometrillä"></div>
           </div>
         </fieldset>
@@ -207,7 +207,7 @@
         <section class="card" aria-live="polite" aria-labelledby="trip-title">
           <h2 id="trip-title">Matkan kustannukset ja kulutukset</h2>
           <div class="field trip-distance">
-            <label for="distance"><span id="distanceLabel">Matkan pituus</span> <output id="distanceOut">400 km</output></label>
+            <label for="distance"><span><span id="distanceLabel">Matkan pituus</span> <span class="label-unit">(km)</span></span></label>
             <div class="controls"><input id="distance" type="range" min="0" max="2000" step="1" value="400"><input id="distanceNum" type="number" min="0" max="2000" step="1" value="400" aria-label="Matkan pituus kilometreinä"></div>
           </div>
           <label class="annual-toggle"><input id="annualToggle" type="checkbox"><span>Vuosittainen ajosuorite</span></label>
@@ -243,13 +243,13 @@
 
   <script>
     const fields = [
-      { id: 'electricity', suffix: ' snt/kWh', decimals: 1, defaultValue: 11 },
-      { id: 'transfer', suffix: ' snt/kWh', decimals: 1, defaultValue: 9 },
-      { id: 'fuelPrice', suffix: ' €/l', decimals: 3, defaultValue: 2.1 },
-      { id: 'evConsumption', suffix: ' kWh/100 km', decimals: 1, defaultValue: 16 },
-      { id: 'chargingLoss', suffix: ' %', decimals: 1, defaultValue: 8 },
-      { id: 'iceConsumption', suffix: ' l/100 km', decimals: 1, defaultValue: 7 },
-      { id: 'distance', suffix: ' km', decimals: 0, defaultValue: 400 }
+      { id: 'electricity', defaultValue: 11 },
+      { id: 'transfer', defaultValue: 9 },
+      { id: 'fuelPrice', defaultValue: 2.1 },
+      { id: 'evConsumption', defaultValue: 16 },
+      { id: 'chargingLoss', defaultValue: 8 },
+      { id: 'iceConsumption', defaultValue: 7 },
+      { id: 'distance', defaultValue: 400 }
     ];
     const fi = (value, digits = 2) => new Intl.NumberFormat('fi-FI', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
     const euros = (value, digits = 0) => `${fi(value, digits)} €`;
@@ -317,10 +317,9 @@
         : 'Sähkön kustannus sisältää sähköenergian ja asetetun lataushäviön. Laskelma ei sisällä huoltoa, ajoneuvoveroa tai muita auton kustannuksia.';
     }
 
-    function setFieldValue({ id, suffix, decimals }, value) {
+    function setFieldValue({ id }, value) {
       document.querySelector(`#${id}`).value = value;
       document.querySelector(`#${id}Num`).value = value;
-      document.querySelector(`#${id}Out`).textContent = `${fi(value, decimals)}${suffix}`;
     }
 
     const annualToggle = document.querySelector('#annualToggle');
@@ -391,13 +390,11 @@
     }
 
     fields.forEach(field => {
-      const { id, suffix, decimals } = field;
+      const { id } = field;
       const range = document.querySelector(`#${id}`);
       const number = document.querySelector(`#${id}Num`);
-      const output = document.querySelector(`#${id}Out`);
       const sync = (source, target) => {
         target.value = source.value;
-        output.textContent = `${fi(+source.value || 0, decimals)}${suffix}`;
         update();
         scheduleQueryUpdate();
       };
