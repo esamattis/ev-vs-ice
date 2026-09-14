@@ -61,8 +61,10 @@
     input[type="range"] { width: 100%; accent-color: var(--red); cursor: pointer; }
     input[type="number"] {
       width: 100%; padding: 10px 9px; border-radius: 10px; border: 1px solid var(--line);
-      background: var(--panel-2); color: var(--text); font: inherit; font-variant-numeric: tabular-nums;
+      appearance: textfield; background: var(--panel-2); color: var(--text); font: inherit; font-variant-numeric: tabular-nums;
     }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { margin: 0; appearance: none; }
     input:focus-visible { outline: 2px solid #ff686d; outline-offset: 2px; }
     .result-hero { padding: 3px 0 23px; border-bottom: 1px solid var(--line); }
     .result-hero .label { color: var(--muted); font-size: .86rem; }
@@ -143,23 +145,23 @@
           <legend><span class="section-code">EV</span>Sähköauto</legend>
           <div class="field">
             <label for="electricity"><span>Sähköenergian hinta <span class="label-unit">(snt/kWh)</span></span></label>
-            <div class="controls"><input id="electricity" type="range" min="0" max="80" step="0.1" value="11"><input id="electricityNum" type="number" min="0" step="0.1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
+            <div class="controls"><input id="electricity" type="range" min="0" max="80" step="1" value="11"><input id="electricityNum" type="number" min="0" step="1" value="11" aria-label="Sähköenergian hinta senttiä kilowattitunnilta"></div>
           </div>
           <div class="field home-charging-field">
             <label class="home-charging-toggle"><input id="homeCharging" type="checkbox" aria-controls="transferSettings" checked><span>Kotilataus</span></label>
             <div id="transferSettings">
               <label for="transfer"><span>Sähkönsiirto ja verot <span class="label-unit">(snt/kWh)</span></span></label>
-              <div class="controls"><input id="transfer" type="range" min="0" max="30" step="0.1" value="9"><input id="transferNum" type="number" min="0" step="0.1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
+              <div class="controls"><input id="transfer" type="range" min="0" max="30" step="1" value="9"><input id="transferNum" type="number" min="0" step="1" value="9" aria-label="Sähkönsiirto ja verot senttiä kilowattitunnilta"></div>
               <p class="price-total">Sähkö yhteensä <strong id="totalElectricityPrice">20,0 snt/kWh</strong></p>
             </div>
           </div>
           <div class="field">
             <label for="evConsumption"><span>Sähköauton kulutus <span class="label-unit">(kWh/100 km)</span></span></label>
-            <div class="controls"><input id="evConsumption" type="range" min="8" max="40" step="0.1" value="16"><input id="evConsumptionNum" type="number" min="0.1" step="0.1" value="16" aria-label="Sähköauton kulutus kilowattituntia sadalla kilometrillä"></div>
+            <div class="controls"><input id="evConsumption" type="range" min="8" max="40" step="1" value="16"><input id="evConsumptionNum" type="number" min="1" step="1" value="16" aria-label="Sähköauton kulutus kilowattituntia sadalla kilometrillä"></div>
           </div>
           <div class="field">
             <label for="chargingLoss"><span>Lataushäviö <span class="label-unit">(%)</span></span></label>
-            <div class="controls"><input id="chargingLoss" type="range" min="0" max="30" step="0.5" value="8"><input id="chargingLossNum" type="number" min="0" max="95" step="0.5" value="8" aria-label="Lataushäviö prosentteina"></div>
+            <div class="controls"><input id="chargingLoss" type="range" min="0" max="30" step="1" value="8"><input id="chargingLossNum" type="number" min="0" max="95" step="1" value="8" aria-label="Lataushäviö prosentteina"></div>
             <p class="input-help">Käytä esimerkiksi 8 %:n lataushäviötä, jos syötät auton ajotietokoneen näyttämän kulutuksen. Jos olet laskenut kulutuksen latausaseman tai sähkömittarin mittaamasta energiasta ja ajetuista kilometreistä, lataushäviöt sisältyvät jo tulokseen — aseta silloin 0 %.</p>
           </div>
         </fieldset>
